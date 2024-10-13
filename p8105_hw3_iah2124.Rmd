@@ -1,0 +1,38 @@
+---
+title: "p8105_hw3_iah2124"
+author: "Iris Hart"
+date: "2024-10-10"
+output: github_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+###Problem 1
+
+Loading packages + data
+```{r}
+library(tidyverse)
+
+library(p8105.datasets)
+data("ny_noaa")
+```
+EDIT STILL
+There are seven variables in the NY NOAA data set, being ID, date, prcp, snow, snwd, tmax, and tmin. 
+
+Create year, month, and day variables
+```{r}
+library(dplyr)
+library(lubridate)
+
+ny_noaa_clean = ny_noaa %>%
+  mutate(
+    year = year(date),
+    month = month(date),
+    day = day(date)
+  )
+```
+View to make sure new variables are created
+```{r}
+view(ny_noaa_clean)
+```
