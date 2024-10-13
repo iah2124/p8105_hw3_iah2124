@@ -8,6 +8,7 @@ output: github_document
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 ```
+
 ###Problem 1
 
 Loading packages + data
@@ -18,7 +19,7 @@ library(p8105.datasets)
 data("ny_noaa")
 ```
 EDIT STILL
-There are seven variables in the NY NOAA data set, being ID, date, prcp, snow, snwd, tmax, and tmin. 
+There are seven variables and 2,595,176 observations in the NY NOAA data set. The variables are ID, date, prcp, snow, snwd, tmax, and tmin. 
 
 Create year, month, and day variables
 ```{r}
@@ -36,3 +37,18 @@ View to make sure new variables are created
 ```{r}
 view(ny_noaa_clean)
 ```
+
+Convert precipitation variable to be mm instead of tenths of mm. Convert daily temperature min and max variables to be degrees to be degrees Celsius from tenths of degrees Celsius. 
+```{r}
+ny_noaa_clean = ny_noaa %>%
+  mutate(
+    tmax = as.numeric(tmax) / 10,   
+    tmin = as.numeric(tmin) / 10,    
+    prcp = as.numeric(prcp) / 10     
+  )
+```
+Check to see if changes were made
+```{r}
+view(ny_noaa_clean)
+```
+
