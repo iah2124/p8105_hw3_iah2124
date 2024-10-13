@@ -52,3 +52,12 @@ Check to see if changes were made
 view(ny_noaa_clean)
 ```
 
+Snowfall analysis: most commonly observed values
+```{r}
+snowfall_counts = ny_noaa_clean %>%
+  count(snow) %>%
+  arrange(desc(n))  
+
+head(snowfall_counts)
+```
+
