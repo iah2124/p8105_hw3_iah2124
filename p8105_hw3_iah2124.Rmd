@@ -16,6 +16,9 @@ knitr::opts_chunk$set(echo = TRUE)
 library(tidyverse)
 library(ggplot2)
 library(readr)
+library(ggridges)
+library(patchwork)
+
 
 library(p8105.datasets)
 data("ny_noaa")
@@ -57,8 +60,8 @@ The most commonly observed day by far was 0cm, for 2,008,508 times. This makes s
 
 ### Create a two-panel plot of average max temperature in Jan and July
 ```{r}
-ny_noaa = 
-  ny_noaa %>% 
+ny_noaa_clean = 
+  ny_noaa_clean %>% 
   separate(date, into = c("year", "month", "day"), convert = TRUE) %>% 
   mutate(
     tmax = as.numeric(tmax),
@@ -66,7 +69,7 @@ ny_noaa =
 ```
 
 ```{r}
-ny_noaa %>% 
+ny_noaa_clean %>% 
   group_by(id, year, month) %>% 
   filter(month %in% c(1, 7)) %>% 
   summarize(mean_tmax = mean(tmax, na.rm = TRUE, color = id)) %>% 
@@ -75,7 +78,25 @@ ny_noaa %>%
   labs(title = "Mean monthly temperature for each station across years for January and July")
 ```
 
+Depicted above is a two-panel plot of the average max temperature in January and July in each station across years. The mean temperature in January is a lot lower than the mean temperature in July. This is true across all stations in all years. The stations follow a similar pattern of temperature highs and lows during the month for all years. We do see a few outliers such as a colder day in july around 1987, and a few others. 
 
+# Create a plot showing the distribution of snowfall
+``` {r}
+hex = 
+  ny_noaa_clean %>% 
+  ggplot(aes(x = tmin, y = tmax)) + 
+  geom_hex()
 
+ridge = 
+  ny_noaa_clean %>% 
+  filter(snow < 10, snow > 0) %>%
+  ggplot(aes(x = snow, y = as.factor(year))) + 
+  geom_density_ridges()
 
-
+hex + ridge
+```
+Above is a two-panel plot with a hex plot of the 'tmx' vs 'tmin' for the full data set, and a ridge plot showing the distribution of snowfall values in mm, greater than 0 and less than 10. This is separated by year.
+In the hex plot, the majority of the data is clustered in the center of the distribution. In some rare cases, the 'tmax' appears less than the 'tmin', which could bring into question the quality and recording of data. 
+In the ride plot, each year has a multimodal snowfall density. Most stations are seeing between 0 and 3.5 cm of snow in a year. Another group is seeing closer to 4.5cm of snow, and the final group is seeing about 7.8-8cm of snow. It is likely this
+multimodality stems from measurement conversions, which was
+also noted in the table of common values.
