@@ -18,7 +18,6 @@ library(ggplot2)
 library(readr)
 library(ggridges)
 library(patchwork)
-library(kableExtra)
 
 
 library(p8105.datasets)
@@ -197,12 +196,12 @@ new_merged_data = merged_data %>%
         BMI = as.numeric(BMI),  
         education = as.numeric(education),  
         
-        age_category = cut(age, 
+        age = cut(age, 
                   breaks = c(20, 30, 40, 50, 60, 70, 80, Inf), 
                   labels = c("21-30", "31-40", "41-50", "51-60", "61-70", "71-80", "80+"),
                   right = FALSE),
                   
-        BMI_category = cut(BMI, 
+        BMI = cut(BMI, 
                            breaks = c(0, 18.5, 24.9, 29.9, 34.9, Inf), 
                            labels = c("Underweight", "Normal weight", "Overweight", "Obesity I", "Obesity II"), 
                            right = TRUE)
@@ -212,8 +211,8 @@ new_merged_data = merged_data %>%
         education = factor(education, 
                            levels = c(1, 2, 3), 
                            labels = c("Less than HS", "HS equivalent", "More than HS")),
-        age_category = factor(age_category, ordered = TRUE), 
-        BMI_category = factor(BMI_category, ordered = TRUE)  
+        age = factor(age, ordered = TRUE), 
+        BMI = factor(BMI, ordered = TRUE)  
     )
 view(new_merged_data)
 ```
@@ -236,3 +235,32 @@ education_summary = new_merged_data %>%
 ```{r}
 print(knitr::kable(education_summary, caption = "Number of Men and Women in Each Education Category"))
 ```
+
+Creating education by age and gender visualization 
+```{r}
+library(dplyr)
+library(ggplot2)
+
+# Assuming your existing age groups are in a column named 'age_group'
+visualization_education = new_merged_data %>%
+    group_by(age, sex, education) %>%
+    summarise(count = n(), .groups = "drop") %>%
+    mutate(count = ifelse(sex == "male", -count, count))  # Negative count for males
+
+# Create the bar plot
+ggplot(visualization_education, aes(x = age, y = count, fill = sex)) +  
+    geom_bar(stat = "identity") +
+    coord_flip() +  # Flip coordinates for a better population pyramid appearance
+    facet_wrap(~ education, scales = "free_y") +  # Separate panels for each education level
+    labs(
+        title = "Population Pyramid of Age Distribution by Gender and Education Category",
+        x = "Age Group",
+        y = "Count",
+        fill = "Gender"
+    ) +
+    theme_minimal() +
+    scale_fill_manual(values = c("male" = "blue", "female" = "pink")) +  
+    theme(axis.text.y = element_text(size = 10))  
+```
+
+Aggregate across minutes to create a total activity variable for each participant
