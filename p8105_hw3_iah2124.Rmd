@@ -102,3 +102,86 @@ In the hex plot, the majority of the data is clustered in the center of the dist
 In the ride plot, each year has a multimodal snowfall density. Most stations are seeing between 0 and 3.5 cm of snow in a year. Another group is seeing closer to 4.5cm of snow, and the final group is seeing about 7.8-8cm of snow. It is likely this
 multimodality stems from measurement conversions, which was
 also noted in the table of common values.
+
+# Problem 2
+### Part 1: Load and clean the datasets 
+```{r}
+accelerometer_data = read_csv("nhanes_accel.csv")
+demographic_data = read_csv("nhanes_covar.csv")
+```
+View the data
+```{r}
+view(demographic_data)
+view(accelerometer_data)
+```
+Checking column names in order to rename variables 
+```{r}
+colnames(demographic_data)
+```
+Renaming variables 
+```{r}
+demographic_data = demographic_data %>%
+    rename(
+        SEQN = `...1`,  
+        sex = `1 = male`,  
+        age = `...3`,  
+        BMI = `...4`,  
+        education = `1 = Less than high school`  
+    ) %>%
+    mutate(
+        sex = as.numeric(sex), 
+        age = as.numeric(age),  
+        BMI = as.numeric(BMI),
+        education = as.numeric(education)  
+    )
+```
+
+Viewing changes to variables 
+```{r}
+view(demographic_data)
+```
+
+Deleting the first three rows of empty data
+```{r}
+demographic_data = demographic_data[-c(1:4), ]
+```
+
+Removing those less than 21 years of age 
+```{r}
+demographic_data = demographic_data %>%
+    filter(age >= 21)
+```
+
+Remove those with missing data
+```{r}
+demographic_data = demographic_data %>%
+    drop_na()
+```
+
+Viewing changes to variables 
+```{r}
+view(demographic_data)
+```
+
+Cleaning acceleratorometer data 
+```{r}
+accelerometer_data = na.omit(accelerometer_data)
+```
+
+```{r}
+remaining_seqns = unique(demographic_data$SEQN)
+```
+
+```{r}
+accelerometer_data = accelerometer_data %>%
+    mutate(SEQN = as.character(SEQN))
+```
+
+```{r}
+merged_data = demographic_data %>%
+    left_join(accelerometer_data, by = "SEQN")
+```
+
+```{r}
+view(merged_data)
+```
