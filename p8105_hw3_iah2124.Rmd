@@ -383,3 +383,23 @@ kable(total_citirides,
       col.names = c("Month", "Rider Type", "Total Rides"),
       align = "c")
 ```
+
+This data table shows the total rides each month including rider type in which the primary users of citi bike during these times. There were more rides in July 2024 compared to July 2020.  There were more rides in Jan 2024 than than 2020. There are overall more users in July for both years when compared to both years in Jan. 
+
+Making a table showing the 5 most popular starting stations for July 2024
+```{r}
+top_stations <- citibike_df |> 
+  filter(month == "july2024") |> 
+  group_by(start_station) |> 
+  summarise(total_citirides = n(), .groups = 'drop') |> 
+  arrange(desc(total_citirides)) |> 
+  slice_head(n = 5)
+
+kable(top_stations, 
+      caption = "Top 5 Most Popular Starting Stations in July 2024",
+      col.names = c("Starting Station", "Number of Rides"),
+      align = "c")
+```
+
+The five most popular starting stations in July 2024 were Pier 61 at Chelsea Piers, University PL & E 14 st, W 21 St & 6 Ave, West St & Chambers St, and W 31 St & 7 Ave. 
+
