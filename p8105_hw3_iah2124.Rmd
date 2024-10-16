@@ -18,6 +18,7 @@ library(ggplot2)
 library(readr)
 library(ggridges)
 library(patchwork)
+library(kableExtra)
 
 
 library(p8105.datasets)
@@ -215,4 +216,23 @@ new_merged_data = merged_data %>%
         BMI_category = factor(BMI_category, ordered = TRUE)  
     )
 view(new_merged_data)
+```
+
+## Part 2
+Creating a reader friendly display of education data for men and women 
+```{r}
+library(knitr)
+
+education_summary = new_merged_data %>%
+    group_by(education) %>%
+    summarise(
+        men = sum(sex == "male", na.rm = TRUE),
+        women = sum(sex == "female", na.rm = TRUE)
+    ) %>%
+    pivot_longer(cols = c(men, women), names_to = "Gender", values_to = "Count") %>%
+    arrange(education)
+```
+
+```{r}
+print(knitr::kable(education_summary, caption = "Number of Men and Women in Each Education Category"))
 ```
