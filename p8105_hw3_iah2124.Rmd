@@ -403,3 +403,28 @@ kable(top_stations,
 
 The five most popular starting stations in July 2024 were Pier 61 at Chelsea Piers, University PL & E 14 st, W 21 St & 6 Ave, West St & Chambers St, and W 31 St & 7 Ave. 
 
+Making a plot to investigate the effects of day of the week, month, and year on median ride duration
+```{r}
+timesummaryciti_df <- citibike_df |> 
+  mutate(year = str_sub(month, -4),
+         month = str_sub(month, 1, 3),
+         weekdays = factor(weekdays, 
+                            levels = c("Sunday", "Monday", "Tuesday", "Wednesday", 
+                                       "Thursday", "Friday", "Saturday"))) |> 
+  group_by(year, month, weekdays) |> 
+  summarise(median_duration = median(duration), .groups = 'drop')
+
+ggplot(timesummaryciti_df, aes(x = weekdays, y = median_duration, group = year, color = year)) +
+  geom_line() +
+  geom_point(size = 2) +
+  facet_wrap(~ year + month, scales = "free_y") +  
+  labs(
+    title = "Median Ride Duration by Day of the Week, Month, and Year",
+    x = "Day of the Week",
+    y = "Median Duration (Minutes)",
+    color = "Year"
+  ) +
+  scale_color_manual(values = c("2020" = "orchid", "2024" = "tomato")) +  
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1)) 
+```
