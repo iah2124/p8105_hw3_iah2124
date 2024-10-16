@@ -18,6 +18,9 @@ library(ggplot2)
 library(readr)
 library(ggridges)
 library(patchwork)
+library(rvest)
+library(httr)
+
 
 
 library(p8105.datasets)
@@ -274,7 +277,7 @@ Creating a plot with trend lines for total activity
 ```{r}
 ggplot(new_merged_data, aes(x = age, y = total_activity, color = sex)) +
   geom_point() +  
-  geom_smooth(method = "lm", se = TRUE, aes(group = sex)) +  
+  geom_smooth(method = "loess", se = TRUE, aes(group = sex)) +  
   facet_wrap(~ education, scales = "free_y") +  
   labs(
     title = "Total Activity by Age Group, Gender, and Education Level",
@@ -286,3 +289,79 @@ ggplot(new_merged_data, aes(x = age, y = total_activity, color = sex)) +
   scale_color_manual(values = c("male" = "blue", "female" = "pink")) +  
   theme(axis.text.x = element_text(angle = 45, hjust = 1)) 
 ```
+
+# Problem 3
+Reading and Cleaning January 2020 Citibike data
+```{r}
+jan2020citi =
+  read_csv("citibike/Jan 2020 Citi.csv") |> 
+  janitor::clean_names() |> 
+  rename(
+    ride_type = rideable_type,
+    start_station = start_station_name,
+    end_station = end_station_name
+  ) |> 
+  mutate(
+    ride_type = str_replace(ride_type, "classic_bike", "classic"),
+    ride_type = str_replace(ride_type, "electric_bike", "electric"),
+    month = "jan2020"
+  )
+view(jan2020citi)
+names(jan2020citi)
+```
+Reading and Cleaning July 2020 Citibike data
+```{r}
+july2020citi =
+  read_csv("citibike/July 2020 Citi.csv") |> 
+  janitor::clean_names() |> 
+  rename(
+    ride_type = rideable_type,
+    start_station = start_station_name,
+    end_station = end_station_name
+  ) |> 
+  mutate(
+    ride_type = str_replace(ride_type, "classic_bike", "classic"),
+    ride_type = str_replace(ride_type, "electric_bike", "electric"),
+    month = "july2020"
+  )
+view(july2020citi)
+names(july2020citi)
+```
+Reading and Cleaning January 2024 Citibike data
+```{r}
+jan2024citi =
+  read_csv("citibike/Jan 2024 Citi.csv") |> 
+  janitor::clean_names() |> 
+  rename(
+    ride_type = rideable_type,
+    start_station = start_station_name,
+    end_station = end_station_name
+  ) |> 
+  mutate(
+    ride_type = str_replace(ride_type, "classic_bike", "classic"),
+    ride_type = str_replace(ride_type, "electric_bike", "electric"),
+    month = "jan2024"
+  )
+view(jan2024citi)
+names(jan2024citi)
+```
+
+Reading and Cleaning July 2024 Citibike data
+```{r}
+july2024citi =
+  read_csv("citibike/July 2024 Citi.csv") |> 
+  janitor::clean_names() |> 
+  rename(
+    ride_type = rideable_type,
+    start_station = start_station_name,
+    end_station = end_station_name
+  ) |> 
+  mutate(
+    ride_type = str_replace(ride_type, "classic_bike", "classic"),
+    ride_type = str_replace(ride_type, "electric_bike", "electric"),
+    month = "july2024"
+  )
+view(july2024citi)
+names(july2024citi)
+```
+
