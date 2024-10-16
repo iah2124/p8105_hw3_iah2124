@@ -96,7 +96,9 @@ ridge =
 hex + ridge
 ```
 Above is a two-panel plot with a hex plot of the 'tmx' vs 'tmin' for the full data set, and a ridge plot showing the distribution of snowfall values in mm, greater than 0 and less than 10. This is separated by year.
+
 In the hex plot, the majority of the data is clustered in the center of the distribution. In some rare cases, the 'tmax' appears less than the 'tmin', which could bring into question the quality and recording of data. 
+
 In the ride plot, each year has a multimodal snowfall density. Most stations are seeing between 0 and 3.5 cm of snow in a year. Another group is seeing closer to 4.5cm of snow, and the final group is seeing about 7.8-8cm of snow. It is likely this
 multimodality stems from measurement conversions, which was
 also noted in the table of common values.
