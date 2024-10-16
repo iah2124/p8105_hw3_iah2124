@@ -15,14 +15,14 @@ knitr::opts_chunk$set(echo = TRUE)
 ```{r}
 library(tidyverse)
 library(ggplot2)
+library(readr)
 
 library(p8105.datasets)
 data("ny_noaa")
 ```
-EDIT STILL
-There are seven variables and 2,595,176 observations in the NY NOAA data set. The variables are ID, date, prcp, snow, snwd, tmax, and tmin. 
+There are 7 variables and 2,595,176 observations in the NY NOAA data set. The variables are Weather station ID, observation date, precipitation (tenths of mm), snowfall (mm), snow depth (mm), temperature max and temperature min (in tenths of degrees C). 
 
-### Create year, month, and day variables and convert precipitation variable to be mm instead of tenths of mm. Convert daily temperature min and max variables to be degrees to be degrees Celsius from tenths of degrees Celsius.
+Create year, month, and day variables and convert precipitation variable to be mm instead of tenths of mm. Convert daily temperature min and max variables to be degrees to be degrees Celsius from tenths of degrees Celsius.
 ```{r}
 library(dplyr)
 library(lubridate)
@@ -54,26 +54,28 @@ head(snowfall_counts)
 ```
 The most commonly observed day by far was 0cm, for 2,008,508 times. This makes sense because most days in NY do not have snow, there are only a few days a year that it does snow. The next most common observation was NA (n = 381,221), which also makes sense since missing data is common. The next most common snowfall amounts were 2.5cm(n = 31,022) and 1.3cm(n = 23,095). These amounts are pretty small but it doesn't typically snow too much when it does snow so this also would be common amounts. The last two most common snowfall amounts are 5.1cm(n = 18,274) and 7.6cm(n = 10,173). These amounts are a bit larger than the last two but still not a huge amount of snow. 
 
-### Filter data to get January and July data (months 1 and 7)
-```{r}
-ny_noaa_jan_july = ny_noaa_clean %>%
-  filter(month %in% c(1, 7)) %>%
-  group_by(id, year, month) %>%
-  summarize(avg_tmax = mean(tmax, na.rm = TRUE), .groups = "drop")
-head(ny_noaa_jan_july)
-```
 
 ### Create a two-panel plot of average max temperature in Jan and July
 ```{r}
-ggplot(ny_noaa_jan_july, aes(x = year, y = avg_tmax, color = id)) +
-  geom_line() +
-  facet_wrap(~ month, ncol = 1, labeller = labeller(month = c('1' = "January", '7' = "July"))) +
-  labs(
-    title = "Average Maximum Temperature in January and July Across Stations",
-    x = "Year",
-    y = "Average Max Temperature (°C)",
-    color = "Station ID"
-  ) +
-  theme_minimal() +
-  theme(legend.position = "none")
+ny_noaa = 
+  ny_noaa %>% 
+  separate(date, into = c("year", "month", "day"), convert = TRUE) %>% 
+  mutate(
+    tmax = as.numeric(tmax),
+    tmin = as.numeric(tmin))
 ```
+
+```{r}
+ny_noaa %>% 
+  group_by(id, year, month) %>% 
+  filter(month %in% c(1, 7)) %>% 
+  summarize(mean_tmax = mean(tmax, na.rm = TRUE, color = id)) %>% 
+  ggplot(aes(x = year, y = mean_tmax, group = id)) + geom_point() + geom_path() +
+  facet_grid(~month) +
+  labs(title = "Mean monthly temperature for each station across years for January and July")
+```
+
+
+
+
+
