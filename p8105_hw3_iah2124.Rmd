@@ -364,4 +364,22 @@ july2024citi =
 view(july2024citi)
 names(july2024citi)
 ```
+Combining the 4 separate data sets 
+```{r}
+citibike_df <- bind_rows(jan2020citi, july2020citi, jan2024citi, july2024citi)
 
+view(citibike_df)
+```
+
+Produce a reader-friendly table showing the total number of rides in each combination of year and month separating casual riders and Citi Bike members
+```{r}
+total_citirides <- citibike_df |> 
+  group_by(month, member_casual) |> 
+  summarise(total_rides = n(), .groups = 'drop') |> 
+  arrange(month, member_casual)
+
+kable(total_citirides,  
+      caption = "Total Number of Rides by Month and Rider Type",
+      col.names = c("Month", "Rider Type", "Total Rides"),
+      align = "c")
+```
