@@ -257,6 +257,7 @@ ggplot(visualization_education, aes(x = age, y = count, fill = sex)) +
     scale_fill_manual(values = c("male" = "blue", "female" = "pink")) +  
     theme(axis.text.y = element_text(size = 10))  
 ```
+In this plot, it is surprising that the most amount of people who have more than a high school degree are in a younger category. I would have though that the older age groups would have more people (men and women) in the more than HS group. The less than hs  population pyramid appears to be pretty even with the age groups 41-50 and 61-70 popping out a tad more for both males and then both genders, respectively. The hs equivalent population pyramid appears to be pretty even with the age groups 41-50 and 51-60  having more females and males respectively for each. The more than high school group is pyramid shaped as the younger age groups have more people than the older age groups.
 
 Aggregate across minutes to create a total activity variable for each participant
 ```{r}
