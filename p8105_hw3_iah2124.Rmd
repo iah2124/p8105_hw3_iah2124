@@ -433,7 +433,6 @@ kable(top_stations,
       col.names = c("Starting Station", "Number of Rides"),
       align = "c")
 ```
-
 The five most popular starting stations in July 2024 were Pier 61 at Chelsea Piers, University PL & E 14 st, W 21 St & 6 Ave, West St & Chambers St, and W 31 St & 7 Ave. 
 
 Making a plot to investigate the effects of day of the week, month, and year on median ride duration
@@ -461,6 +460,7 @@ ggplot(timesummaryciti_df, aes(x = weekdays, y = median_duration, group = year, 
   theme_minimal() +
   theme(axis.text.x = element_text(angle = 45, hjust = 1)) 
 ```
+This plot shows the median duration for each day of the week for each month (jan and july) for each year (2020 and 2024). In Jan and July 2020, Saturdays and Sundays had many more riders than the other 5 days. This is similar in july 2024, where Saturday is the most ridden day, and Sunday after that. The other days are much lower, with a slight peak on Thursday. In Jan 2024, there is more of a gradual increase each day starting with Sunday, and increasing each day (besides a dip on Tuesdays), all the way until Saturday with a peak. The median durations are higher in the July months than the Jan months for both years. 
 
 2024 figure that shows the impact of month, membership status, and bike type on the distribution of ride duration
 ```{r}
