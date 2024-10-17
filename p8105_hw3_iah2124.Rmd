@@ -20,6 +20,7 @@ library(ggridges)
 library(patchwork)
 library(rvest)
 library(httr)
+library(knitr)
 
 
 
@@ -192,7 +193,7 @@ Encoding data with reasonable variable classes
 ```{r}
 library(dplyr)
 
-new_merged_data = merged_data %>%
+total_merged_data = merged_data %>%
     mutate(
         sex = as.numeric(sex), 
         age = as.numeric(age),  
@@ -217,26 +218,18 @@ new_merged_data = merged_data %>%
         age = factor(age, ordered = TRUE), 
         BMI = factor(BMI, ordered = TRUE)  
     )
-view(new_merged_data)
+view(total_merged_data)
 ```
 
 ## Part 2
 Creating a reader friendly display of education data for men and women 
 ```{r}
-library(knitr)
+eduction_table = total_merged_data |> 
+  count(education, sex) |> 
+  pivot_wider(names_from = sex, values_from = n, values_fill = 0) |> 
+  rename("Education Level"= education)
 
-education_summary = new_merged_data %>%
-    group_by(education) %>%
-    summarise(
-        men = sum(sex == "male", na.rm = TRUE),
-        women = sum(sex == "female", na.rm = TRUE)
-    ) %>%
-    pivot_longer(cols = c(men, women), names_to = "Gender", values_to = "Count") %>%
-    arrange(education)
-```
-
-```{r}
-print(knitr::kable(education_summary, caption = "Number of Men and Women in Each Education Category"))
+kable(eduction_table, format = "markdown", caption = "Number of Men and Women in Each Education Category")
 ```
 
 Creating education by age and gender visualization 
@@ -244,17 +237,15 @@ Creating education by age and gender visualization
 library(dplyr)
 library(ggplot2)
 
-# Assuming your existing age groups are in a column named 'age_group'
-visualization_education = new_merged_data %>%
+visualization_education = total_merged_data %>%
     group_by(age, sex, education) %>%
     summarise(count = n(), .groups = "drop") %>%
-    mutate(count = ifelse(sex == "male", -count, count))  # Negative count for males
+    mutate(count = ifelse(sex == "male", -count, count))  
 
-# Create the bar plot
 ggplot(visualization_education, aes(x = age, y = count, fill = sex)) +  
     geom_bar(stat = "identity") +
-    coord_flip() +  # Flip coordinates for a better population pyramid appearance
-    facet_wrap(~ education, scales = "free_y") +  # Separate panels for each education level
+    coord_flip() +  
+    facet_wrap(~ education, scales = "free_y") +  
     labs(
         title = "Population Pyramid of Age Distribution by Gender and Education Category",
         x = "Age Group",
@@ -268,26 +259,62 @@ ggplot(visualization_education, aes(x = age, y = count, fill = sex)) +
 
 Aggregate across minutes to create a total activity variable for each participant
 ```{r}
-new_merged_data <- new_merged_data %>%
+total_activity = total_merged_data %>%
   mutate(total_activity = rowSums(select(., -c(1:5)), na.rm = TRUE))
 
-view(new_merged_data)
+view(total_activity)
 ```
 Creating a plot with trend lines for total activity 
 ```{r}
-ggplot(new_merged_data, aes(x = age, y = total_activity, color = sex)) +
-  geom_point() +  
+ggplot(total_activity, aes(x = age, y = total_activity, color = sex)) +
+  geom_point(alpha = 0.5) +  
   geom_smooth(method = "loess", se = TRUE, aes(group = sex)) +  
   facet_wrap(~ education, scales = "free_y") +  
   labs(
     title = "Total Activity by Age Group, Gender, and Education Level",
     x = "Age Group",
-    y = "Total Activity (Row Sum)",
+    y = "Total Activity (MIMs)",
     color = "Gender"
   ) +
   theme_minimal() +
   scale_color_manual(values = c("male" = "blue", "female" = "pink")) +  
   theme(axis.text.x = element_text(angle = 45, hjust = 1)) 
+```
+
+Making a three-panel plot that shows the 24-hour activity time courses for each education level and use color to indicate sex.
+```{r}
+day_activity = total_merged_data |> 
+    pivot_longer(
+    cols = min1:min1440,
+    names_to = "minute",
+    values_to = "mims",
+    names_prefix = "min"
+  )
+
+view(day_activity)
+```
+
+```{r}
+day_activity |> 
+  mutate(
+    minute = as.numeric(minute),
+    hour = (minute - 1) / 60
+  ) |> 
+  group_by(SEQN, hour, sex, education) |> 
+  summarize(avg_mims = sum(mims, na.rm = TRUE), .groups = "drop") |>  
+
+  ggplot(aes(x = hour, y = avg_mims, color = sex)) +
+  geom_smooth(se = FALSE, method = "loess") +  
+  facet_grid(. ~ education) +
+  labs(
+    title = "24-hour Accelerometer Activity",
+    x = "Hour",
+    y = "Average MIMS",
+    color = "Sex"
+  ) +
+  theme_minimal() +
+  scale_color_manual(values = c("male" = "blue", "female" = "pink")) + 
+  theme(legend.position = "top")
 ```
 
 # Problem 3
