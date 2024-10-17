@@ -84,7 +84,7 @@ ny_noaa_clean %>%
 
 Depicted above is a two-panel plot of the average max temperature in January and July in each station across years. The mean temperature in January is a lot lower than the mean temperature in July. This is true across all stations in all years. The stations follow a similar pattern of temperature highs and lows during the month for all years. We do see a few outliers such as a colder day in july around 1987, and a few others. 
 
-# Create a plot showing the distribution of snowfall
+Create a plot showing the distribution of snowfall
 ``` {r}
 hex = 
   ny_noaa_clean %>% 
@@ -482,3 +482,7 @@ ggplot(rides_2024, aes(x = month, y = duration, fill = member_casual)) +
   theme(axis.text.x = element_text(angle = 45, hjust = 1))  
 ```
 This plot shows the distribution of rides by month, membership status, and bike type. Most bike rides are between about 1 - 25 minutes long. Very few rides are between 35 and 100 minutes. The shape of all of the plots is thicker at the bottom and gets much thinner upwards in an almost triangle shape. Casual riders typically ride a bit longer, with more data points in the 25-60 minute range. There seems to be less riders who use the electric bikes, and usually ride about the same amount as the classic bike. Casual riders do however ride a bit longer on classic compared to electric bikes. 
+
+```{r}
+cat(":) end of hw 3! :D\n")
+```
